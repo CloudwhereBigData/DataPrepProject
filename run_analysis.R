@@ -2,17 +2,21 @@
 library("reshape2")
 library("plyr")
 
-##Read into dataframes the test set
-xtest <- read.table(file="data/UCI/test/X_test.txt", sep="")  ##main data
-ytest <- read.table(file="data/UCI/test/y_test.txt", sep="", col.names = "activity")  ##activity
-stest <- read.table(file="data/UCI/test/subject_test.txt", sep="", col.names = "subject")  ## subject
+##Read into dataframes the test set from Samsung Smartphone data - link below
+## http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones 
+## Eliminated all the subdirectories where data was stored locally so it can be run if data
+## is placed in working directory (3 test files, 3 train files, features and labels )
+##xtest <- read.table(file="data/UCI/test/X_test.txt", sep="")  ##main data
+xtest <- read.table(file="X_test.txt", sep="")  ##main data
+ytest <- read.table(file="y_test.txt", sep="", col.names = "activity")  ##activity
+stest <- read.table(file="subject_test.txt", sep="", col.names = "subject")  ## subject
 ## add the subject and activity columns to the main test data
 completeTest <- cbind(stest, ytest, xtest)
 
 ##Read into dataframes the training set
-xtrain <- read.table(file="data/UCI/train/X_train.txt", sep="")  ##main data
-ytrain <- read.table(file="data/UCI/train/y_train.txt", sep="", col.names = "activity")  ##activity
-strain <- read.table(file="data/UCI/train/subject_train.txt", sep="", col.names = "subject")  ## subject
+xtrain <- read.table(file="X_train.txt", sep="")  ##main data
+ytrain <- read.table(file="y_train.txt", sep="", col.names = "activity")  ##activity
+strain <- read.table(file="subject_train.txt", sep="", col.names = "subject")  ## subject
 ## add the subject and activity columns to the main training data
 completeTrain <- cbind(strain, ytrain, xtrain)
 
@@ -25,7 +29,7 @@ completeTrain <- cbind(strain, ytrain, xtrain)
 mergedData <- merge(completeTrain, completeTest, all=TRUE)
 
 ##Get names for features in the data set
-xnames <- read.table(file="data/UCI/features.txt", sep="")  ##feature names
+xnames <- read.table(file="features.txt", sep="")  ##feature names
 xnamesvec <- as.vector(xnames[,2])   ## pull out just names col
 allnames <- c("subject", "activity", xnamesvec)  ## add first two col names
 colnames(mergedData) <- allnames  ## change names in merged data
@@ -44,7 +48,7 @@ tidydata <- tidydata[order(tidydata$subject, tidydata$activty),]
 
 ##Pull activity labels into vector
 ##and filter out the number col
-actlabels <- read.table(file="data/UCI/activity_labels.txt", sep="")  ##activity lables
+actlabels <- read.table(file="activity_labels.txt", sep="")  ##activity lables
 actlabelsvec <- as.vector(actlabels[,2])   ## pull out just label col
 ## change activity number to value in tidy dataset
 tidydata <- within(tidydata, activity <- actlabelsvec[activity])
@@ -60,4 +64,4 @@ tidydata <- ddply(tidydata, .(activity, subject), numcolwise(mean))
 tidydata <- tidydata[order(tidydata$subject),]
 
 ##write out tidydata 
-write.table(tidydata, file="data/UCI/tidydata.txt", row.name=FALSE)
+write.table(tidydata, file="tidydata.txt", row.name=FALSE)
